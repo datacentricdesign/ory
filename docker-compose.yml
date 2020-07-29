@@ -29,7 +29,7 @@ services:
       - TTL_REFRESH_TOKEN=72000h
       - TTL_LOGIN_CONSENT_REQUEST=15m
       - ISSUER_URL=$PROTOCOL://$HOST:$PORT
-      - SERVE_TLS_ALLOW_TERMINATION_FROM=172.20.0.22/24
+      - SERVE_TLS_ALLOW_TERMINATION_FROM=$HYDRA_IP_TLS_TERMINATION
     volumes:
       - ./certs:/etc/certs
       - ./configurator/config/hydra/.hydra:/.hydra
