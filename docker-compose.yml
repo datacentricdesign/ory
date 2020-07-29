@@ -8,9 +8,9 @@ services:
   # It allows client applications
   ory-hydra:
     image: oryd/hydra:$HYDRA_VERSION
-    container_name: hydra
+    container_name: ory-hydra
     depends_on:
-      - hydra-migrate
+      - ory-hydra-migrate
     command:
       serve all
     environment:
@@ -38,7 +38,7 @@ services:
   # Create all the necessary data environment in postgres for Hydra
   ory-hydra-migrate:
     image: oryd/hydra:$HYDRA_VERSION
-    container_name: hydra-migrate
+    container_name: ory-hydra-migrate
     environment:
       - LOG_LEVEL=$LOG_LEVEL
       - HYDRA_SYSTEM_SECRET=$HYDRA_SYSTEM_SECRET
@@ -50,12 +50,12 @@ services:
   # It allows access to resources (e.g. things, persons...)
   ory-keto:
     image: oryd/keto:$KETO_VERSION
-    container_name: keto
+    container_name: ory-keto
     ports:
       - 4466:4466
     depends_on:
-      - hydra
-      - keto-migrate
+      - ory-hydra
+      - ory-keto-migrate
     environment:
       - LOG_LEVEL=$LOG_LEVEL
       - DSN=postgres://$ORY_POSTGRES_USER:$ORY_POSTGRES_PASSWORD@ory-postgres:5432/$ORY_POSTGRES_DB?sslmode=disable
@@ -69,7 +69,7 @@ services:
   # Creates all the necessary data environment in postgres for Keto
   ory-keto-migrate:
     image: oryd/keto:$KETO_VERSION
-    container_name: keto-migrate
+    container_name: ory-keto-migrate
     environment:
       - LOG_LEVEL=$LOG_LEVEL
     command:
@@ -85,15 +85,15 @@ services:
         - KETO_VERSION=$KETO_VERSION
     container_name: configurator
     depends_on:
-      - hydra
-      - keto
+      - ory-hydra
+      - ory-keto
     volumes:
       - ../configurator/scripts:/scripts
     environment:
       # All of these URLs MUST NOT end with a trailing slash. This is very important!
-      - HYDRA_URL=http://hydra:4444
-      - HYDRA_ADMIN_URL=http://hydra:4445
-      - KETO_URL=http://keto:4466
+      - HYDRA_URL=http://ory-hydra:4444
+      - HYDRA_ADMIN_URL=http://ory-hydra:4445
+      - KETO_URL=http://ory-keto:4466
       # This sets the prefix for all resource, action, and subject names.
       # Be aware that this prefix is automatically applied to all OAuth2 Clients as well.
       - "HYDRA_SUBJECT_PREFIX=subjects:hydra:"
