@@ -1,0 +1,15 @@
+{
+  "client_id": "${GRAFANA_CLIENT_ID}",
+  "client_name": "Grafana",
+  "description": "A Grafana instance connected to the Bucket.",
+  "client_secret": "${GRAFANA_CLIENT_SECRET}",
+  "scope": "${GRAFANA_SCOPE}",
+  "grant_types": ["client_credentials", "refresh_token", "authorization_code"],
+  "response_types": ["token", "refresh_token", "code"],
+  "logo_uri": "https://avatars0.githubusercontent.com/u/7195757?v=3&s=400",
+  "redirect_uris": [
+    "${PROTOCOL}://${HOST}:${PORT}/login/generic_oauth",
+    "http://localhost:3000/login/generic_oauth"
+  ],
+  "token_endpoint_auth_method": "client_secret_post"
+}
