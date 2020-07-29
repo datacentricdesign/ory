@@ -5,4 +5,4 @@ prefix: /roles
 rewrite: /roles
 add_request_headers:
   X-Forwarded-Proto: "https"
-service: keto:4466
+service: ory-keto:4466

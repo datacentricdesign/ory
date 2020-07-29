@@ -3,4 +3,4 @@ kind:  Mapping
 name:  hydra_wellknown_mapping
 prefix: /.well-known/
 rewrite: /.well-known/
-service: hydra:4444
+service: ory-hydra:4444

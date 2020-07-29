@@ -3,9 +3,7 @@ kind:  Mapping
 name:  hydra_oauth2_mapping
 prefix: /oauth2/
 rewrite: /oauth2/
-#add_request_headers:
-#  X-Forwarded-Proto: "https"
-service: hydra:4444
+service: ory-hydra:4444
 cors:
     origins: http://localhost:4200
     methods: POST, GET, OPTIONS

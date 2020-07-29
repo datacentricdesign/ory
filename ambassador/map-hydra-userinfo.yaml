@@ -3,7 +3,7 @@ kind:  Mapping
 name:  hydra_userinfo_mapping
 prefix: /userinfo
 rewrite: /userinfo
-service: hydra:4444
+service: ory-hydra:4444
 cors:
     origins: http://localhost:4200
     methods: POST, GET, OPTIONS
