@@ -32,7 +32,7 @@ services:
       - SERVE_TLS_ALLOW_TERMINATION_FROM=172.20.0.22/24
     volumes:
       - ./certs:/etc/certs
-      - ./configurator/hydra/.hydra:/.hydra
+      - ./configurator/config/hydra/.hydra:/.hydra
     restart: on-failure
 
   # Create all the necessary data environment in postgres for Hydra
@@ -114,7 +114,7 @@ services:
     restart: on-failure
 
   # Postgres is a relational database, used to store Hydra and Keto data
-  # Stored on $HOST_DATA_FOLDER/postgresql
+  # Stored on $HOST_DATA_FOLDER/ory-postgres
   ory-postgres:
     image: postgres:9.6
     container_name: ory-postgres
