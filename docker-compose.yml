@@ -88,7 +88,7 @@ services:
       - ory-hydra
       - ory-keto
     volumes:
-      - ../configurator/scripts:/scripts
+      - ./configurator/scripts:/scripts
     environment:
       # All of these URLs MUST NOT end with a trailing slash. This is very important!
       - HYDRA_URL=http://ory-hydra:4444
