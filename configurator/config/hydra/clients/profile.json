@@ -1,0 +1,9 @@
+{
+  "client_id": "${APP_IDENTITY_PROVIDER_CLIENT_ID}",
+  "client_name": "DCD Identity Provider",
+  "description": "Identity Provider of the Data Centric Design Hub.",
+  "client_secret": "${APP_IDENTITY_PROVIDER_CLIENT_SECRET}",
+  "scope": "${APP_IDENTITY_PROVIDER_SCOPE}",
+  "grant_types": ["client_credentials", "refresh_token"],
+  "response_types": ["token"]
+}

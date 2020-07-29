@@ -1,0 +1,8 @@
+apiVersion: ambassador/v1
+kind:  Mapping
+name:  keto_engines_mapping
+prefix: /engines
+rewrite: /engines
+add_request_headers:
+  X-Forwarded-Proto: "https"
+service: keto:4466

@@ -1,0 +1,131 @@
+version: '3'
+
+# This compose will load all the ORY identity infrastructure for the DCD Lab
+# for running the hub locally, without client apps
+services:
+
+  # Hydra is the OAuth2 server
+  # It allows client applications
+  ory-hydra:
+    image: oryd/hydra:$HYDRA_VERSION
+    container_name: hydra
+    depends_on:
+      - hydra-migrate
+    command:
+      serve all
+    environment:
+      - LOG_LEVEL=$LOG_LEVEL
+      - SECRETS_SYSTEM=$HYDRA_SYSTEM_SECRET
+      - DSN=postgres://$ORY_POSTGRES_USER:$ORY_POSTGRES_PASSWORD@ory-postgres:5432/$$ORY_POSTGRES_DB?sslmode=disable
+      - URLS_CONSENT=$PROFILE_URL/consent
+      - URLS_LOGIN=$PROFILE_URL/signin
+      - URLS_LOGOUT=$PROFILE_URL/logout
+      - URLS_ERROR=$PROFILE_URL/error
+      - URLS_SELF_ISSUER=$PROTOCOL://$HOST:$PORT
+      - OAUTH2_EXPOSE_INTERNAL_ERRORS=1
+      - TTL_AUTH_CODE=2400h
+      - TTL_ID_TOKEN=2400h
+      - TTL_ACCESS_TOKEN=2400h
+      - TTL_REFRESH_TOKEN=72000h
+      - TTL_LOGIN_CONSENT_REQUEST=15m
+      - ISSUER_URL=$PROTOCOL://$HOST:$PORT
+      - SERVE_TLS_ALLOW_TERMINATION_FROM=172.20.0.22/24
+    volumes:
+      - ./certs:/etc/certs
+      - ./config/hydra/.hydra:/.hydra
+    restart: on-failure
+
+  # Create all the necessary data environment in postgres for Hydra
+  ory-hydra-migrate:
+    image: oryd/hydra:$HYDRA_VERSION
+    container_name: hydra-migrate
+    environment:
+      - LOG_LEVEL=$LOG_LEVEL
+      - HYDRA_SYSTEM_SECRET=$HYDRA_SYSTEM_SECRET
+    command:
+      migrate sql postgres://$ORY_POSTGRES_USER:$ORY_POSTGRES_PASSWORD@ory-postgres:5432/$ORY_POSTGRES_DB?sslmode=disable --yes
+    restart: on-failure
+
+  # Keto is the Access Control Policy (ACP) manager
+  # It allows access to resources (e.g. things, persons...)
+  ory-keto:
+    image: oryd/keto:$KETO_VERSION
+    container_name: keto
+    ports:
+      - 4466:4466
+    depends_on:
+      - hydra
+      - keto-migrate
+    environment:
+      - LOG_LEVEL=$LOG_LEVEL
+      - DSN=postgres://$AC_DB_USER:$AC_DB_PASSWORD@postgresd:5432/$AC_DB?sslmode=disable
+      - AUTHENTICATOR_OAUTH2_INTROSPECTION_CLIENT_ID=$KETO_CLIENT_ID
+      - AUTHENTICATOR_OAUTH2_INTROSPECTION_CLIENT_SECRET=$KETO_CLIENT_SECRET
+      - AUTHENTICATOR_OAUTH2_INTROSPECTION_TOKEN_URL=$PROTOCOL://$HOST:$PORT/oauth2/token
+      - AUTHENTICATOR_OAUTH2_INTROSPECTION_URL=$PROTOCOL://$HOST:$PORT/oauth2/introspect
+      - AUTHENTICATOR_OAUTH2_CLIENT_CREDENTIALS_TOKEN_URL=$PROTOCOL://$HOST:$PORT/oauth2/token
+    restart: on-failure
+
+  # Creates all the necessary data environment in postgres for Keto
+  ory-keto-migrate:
+    image: oryd/keto:$KETO_VERSION
+    container_name: keto-migrate
+    environment:
+      - LOG_LEVEL=$LOG_LEVEL
+    command:
+      migrate sql postgres://$ORY_POSTGRES_USER:$ORY_POSTGRES_PASSWORD@ory-postgres:5432/$ORY_POSTGRES_DB?sslmode=disable
+    restart: on-failure
+
+  # Creates all Hydra Clients (from config/hydra/clients) and Keto ACPs (fromconfig/keto/policies|roles)
+  configurator:
+    build:
+      context: ./configurator
+      args:
+        - HYDRA_VERSION=$HYDRA_VERSION
+        - KETO_VERSION=$KETO_VERSION
+    container_name: configurator
+    depends_on:
+      - hydra
+      - keto
+    volumes:
+      - ../configurator/scripts:/scripts
+    environment:
+      # All of these URLs MUST NOT end with a trailing slash. This is very important!
+      - HYDRA_URL=http://hydra:4444
+      - HYDRA_ADMIN_URL=http://hydra:4445
+      - KETO_URL=http://keto:4466
+      # This sets the prefix for all resource, action, and subject names.
+      # Be aware that this prefix is automatically applied to all OAuth2 Clients as well.
+      - "HYDRA_SUBJECT_PREFIX=subjects:hydra:"
+      - "HYDRA_RESOURCE_PREFIX=resources:hydra:"
+      - "HYDRA_ACTION_PREFIX=actions:hydra:"
+      - "KETO_RESOURCE_PREFIX=resources:keto:"
+      - "KETO_ACTION_PREFIX=actions:keto:"
+      - KETO_CLIENT_ID=$KETO_CLIENT_ID
+      - KETO_CLIENT_SECRET=$KETO_CLIENT_SECRET
+      - APP_BUCKET_CLIENT_ID=$APP_BUCKET_CLIENT_ID
+      - APP_BUCKET_CLIENT_SECRET=$APP_BUCKET_CLIENT_SECRET
+      - APP_PROFILE_CLIENT_ID=$APP_PROFILE_CLIENT_ID
+      - APP_PROFILE_CLIENT_SECRET=$APP_PROFILE_CLIENT_SECRET
+      - APP_PROFILE_SCOPE=$APP_PROFILE_SCOPE
+      - PORT=$PORT
+      - PROTOCOL=$PROTOCOL
+      - HOST=$HOST
+    restart: on-failure
+
+  # Postgres is a relational database, used to store Hydra and Keto data
+  # Stored on $HOST_DATA_FOLDER/postgresql
+  ory-postgres:
+    image: postgres:9.6
+    container_name: ory-postgres
+    environment:
+      - POSTGRES_USER=$ORY_POSTGRES_USER
+      - POSTGRES_PASSWORD=$ORY_POSTGRES_PASSWORD
+      - POSTGRES_DB=$ORY_POSTGRES_DB
+    volumes:
+      - $HOST_DATA_FOLDER/ory-postgres:/var/lib/postgresql/data
+
+networks: 
+  default:
+      external:
+        name: dcd-net

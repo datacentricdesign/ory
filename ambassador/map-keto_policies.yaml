@@ -1,0 +1,8 @@
+apiVersion: ambassador/v1
+kind:  Mapping
+name:  keto_policies_mapping
+prefix: /policies
+rewrite: /policies
+add_request_headers:
+  X-Forwarded-Proto: "https"
+service: keto:4466

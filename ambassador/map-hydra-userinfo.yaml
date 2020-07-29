@@ -1,0 +1,13 @@
+apiVersion: ambassador/v1
+kind:  Mapping
+name:  hydra_userinfo_mapping
+prefix: /userinfo
+rewrite: /userinfo
+service: hydra:4444
+cors:
+    origins: http://localhost:4200
+    methods: POST, GET, OPTIONS
+    headers: Authorization
+    # credentials: true
+    exposed_headers: Content-Type
+    # max_age: "86400"

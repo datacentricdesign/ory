@@ -1,0 +1,8 @@
+apiVersion: ambassador/v1
+kind:  Mapping
+name:  keto_roles_mapping
+prefix: /roles
+rewrite: /roles
+add_request_headers:
+  X-Forwarded-Proto: "https"
+service: keto:4466

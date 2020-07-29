@@ -1,0 +1,6 @@
+apiVersion: ambassador/v1
+kind:  Mapping
+name:  dcd_app_identity_provider_mapping
+prefix: /auth
+rewrite: /auth
+service: dcd-app-identity-provider:8888
