@@ -1,12 +1,12 @@
 {
-  "client_id": "${APP_MOBILE_CLIENT_ID}",
-  "client_name": "DCD - Mobile App Example",
-  "description": "The HTTP API of the Data-Centric Design hub.",
-  "scope": "$APP_MOBILE_SCOPE",
+  "client_id": "${IOSENSE_CLIENT_ID}",
+  "client_name": "IOSense",
+  "description": "A Mobile app for to send data to Bucket.",
+  "scope": "${IOSENSE_SCOPE}",
   "grant_types": ["authorization_code", "refresh_token"],
   "response_types": ["token", "code", "id_token"],
   "redirect_uris": [
-    "nl.tudelft.ide.dcd-app-mobile:/oauth2redirect"
+    "nl.tudelft.ide.iosense:/oauth2redirect"
   ],
   "token_endpoint_auth_method": "none"
 }
