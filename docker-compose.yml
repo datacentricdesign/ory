@@ -32,7 +32,7 @@ services:
       - SERVE_TLS_ALLOW_TERMINATION_FROM=172.20.0.22/24
     volumes:
       - ./certs:/etc/certs
-      - ./config/hydra/.hydra:/.hydra
+      - ./configurator/hydra/.hydra:/.hydra
     restart: on-failure
 
   # Create all the necessary data environment in postgres for Hydra
