@@ -3,4 +3,4 @@ kind:  Mapping
 name:  profile_mapping
 prefix: /profile
 rewrite: /profile
-service: profile:80
+service: profile-ui:80
