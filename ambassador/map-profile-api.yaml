@@ -1,0 +1,6 @@
+apiVersion: ambassador/v1
+kind:  Mapping
+name:  profile_api_mapping
+prefix: /profile/api
+rewrite: /profile/api
+service: profile-api:80
