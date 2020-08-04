@@ -17,10 +17,10 @@ services:
       - LOG_LEVEL=$LOG_LEVEL
       - SECRETS_SYSTEM=$HYDRA_SYSTEM_SECRET
       - DSN=postgres://$ORY_POSTGRES_USER:$ORY_POSTGRES_PASSWORD@ory-postgres:5432/$ORY_POSTGRES_DB?sslmode=disable
-      - URLS_CONSENT=$PROFILE_URL/consent
-      - URLS_LOGIN=$PROFILE_URL/signin
-      - URLS_LOGOUT=$PROFILE_URL/logout
-      - URLS_ERROR=$PROFILE_URL/error
+      - URLS_CONSENT=$PROFILE_URL/consent.html
+      - URLS_LOGIN=$PROFILE_URL/signin.html
+      - URLS_LOGOUT=$PROFILE_URL/logout.html
+      - URLS_ERROR=$PROFILE_URL/error.html
       - URLS_SELF_ISSUER=$PROTOCOL://$HOST:$PORT
       - OAUTH2_EXPOSE_INTERNAL_ERRORS=1
       - TTL_AUTH_CODE=2400h
